@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getTrackById } from '../utils/supabaseUtils';
 import { useAudio } from '../context/AudioContext';
+import { getTrackById } from '../utils/supabaseUtils';
+import { FaPlay, FaPause, FaStepBackward, FaStepForward } from 'react-icons/fa';
 
 function TrackDetail() {
   const { trackId } = useParams();
   const [track, setTrack] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { playTrack, currentTrack, isPlaying, isLoading } = useAudio();
+  const { playTrack, togglePlayPause, currentTrack, isPlaying, progress, duration, seek } = useAudio();
 
   useEffect(() => {
     const fetchTrackDetails = async () => {
@@ -24,26 +25,56 @@ function TrackDetail() {
     fetchTrackDetails();
   }, [trackId]);
 
+  useEffect(() => {
+    // Hide the persistent player when this component mounts
+    document.body.classList.add('hide-persistent-player');
+    // Show it again when the component unmounts
+    return () => document.body.classList.remove('hide-persistent-player');
+  }, []);
+
   if (loading) return <div className="text-center text-white">Loading track details...</div>;
   if (!track) return <div className="text-center text-white">Track not found</div>;
 
-  const isCurrentTrack = currentTrack && currentTrack.id === track.id;
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handlePlayPause = () => {
+    if (currentTrack?.id !== track.id) {
+      playTrack(track);
+    } else {
+      togglePlayPause();
+    }
+  };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4 text-white">{track.title}</h1>
-      <p className="text-lg mb-4 text-white opacity-80">{track.description}</p>
-      <div className="mb-6 text-white opacity-60">
-        <p>Duration: {Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}</p>
-        <p>Category: {track.category}</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-nsdr-dark to-gray-900 p-4 animate-gradient">
+      <img src={track.image_url || '/default-album-art.jpg'} alt={track.title} className="w-64 h-64 rounded-lg shadow-lg mb-6" />
+      <h2 className="text-white text-2xl font-bold mb-2">{track.title}</h2>
+      <p className="text-gray-400 mb-6">{track.artist}</p>
+      <div className="w-full max-w-md mb-4">
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value={progress}
+          onChange={(e) => seek(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        <div className="flex justify-between text-gray-400 text-sm">
+          <span>{formatTime(progress)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
       </div>
-      <button
-        onClick={() => playTrack(track)}
-        disabled={isLoading}
-        className={`bg-nsdr-accent text-nsdr-dark px-6 py-3 rounded-full font-semibold hover:bg-opacity-80 transition-all ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-      >
-        {isLoading ? 'Loading...' : isCurrentTrack && isPlaying ? 'Pause' : 'Play'}
-      </button>
+      <div className="flex justify-center items-center space-x-6">
+        <button className="text-white text-2xl"><FaStepBackward /></button>
+        <button onClick={handlePlayPause} className="bg-nsdr-accent text-nsdr-dark p-4 rounded-full text-3xl">
+          {isPlaying && currentTrack?.id === track.id ? <FaPause /> : <FaPlay />}
+        </button>
+        <button className="text-white text-2xl"><FaStepForward /></button>
+      </div>
     </div>
   );
 }
