@@ -50,10 +50,10 @@ function TrackDetail() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-nsdr-dark to-gray-900 p-4 animate-gradient">
-      <img src={track.image_url || '/default-album-art.jpg'} alt={track.title} className="w-64 h-64 rounded-lg shadow-lg mb-6" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-site-bg p-2">
+      <img src={track.image_url || '/default-album-art.jpg'} alt={track.title} className="w-64 h-64 rounded-lg shadow-lg mb-4" />
       <h2 className="text-white text-2xl font-bold mb-2">{track.title}</h2>
-      <p className="text-gray-400 mb-6">{track.artist}</p>
+      <p className="text-gray-400 mb-4">{track.artist}</p>
       <div className="w-full max-w-md mb-4">
         <input
           type="range"

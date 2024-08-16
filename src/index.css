@@ -1,13 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-nsdr-dark text-nsdr-light font-sans;
+@layer utilities {
+  .bg-site-bg {
+    background-color: #151518;
+  }
 }
 
+body {
+  @apply text-nsdr-light font-sans bg-site-bg;
+  font-family: 'Hanken Grotesk', sans-serif;
+}
 /* Custom utility classes */
 .bg-gradient-subtle {
   @apply bg-gradient-to-br from-nsdr-dark to-nsdr-light bg-opacity-10;

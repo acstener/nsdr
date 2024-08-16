@@ -8,6 +8,10 @@ module.exports = {
         'nsdr-dark': '#0a192f',
         'nsdr-light': '#8892b0',
         'nsdr-accent': '#64ffda',
+        'site-bg': '#151518',
+      },
+      fontFamily: {
+        sans: ['Hanken Grotesk', 'sans-serif'],
       },
       animation: {
         gradient: 'gradient 15s ease infinite',

@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 export const getCategories = async () => {
   const { data, error } = await supabase
     .from('categories')
-    .select('*')
+    .select('id, name, description, image_url')
     .order('name');
   
   if (error) throw error;
