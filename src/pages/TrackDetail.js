@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAudio } from '../context/AudioContext';
 import { getTrackById } from '../utils/supabaseUtils';
 import { FaPlay, FaPause, FaStepBackward, FaStepForward } from 'react-icons/fa';
 
@@ -8,7 +7,10 @@ function TrackDetail() {
   const { trackId } = useParams();
   const [track, setTrack] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { playTrack, togglePlayPause, currentTrack, isPlaying, progress, duration, seek } = useAudio();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     const fetchTrackDetails = async () => {
@@ -25,29 +27,65 @@ function TrackDetail() {
     fetchTrackDetails();
   }, [trackId]);
 
-  useEffect(() => {
-    // Hide the persistent player when this component mounts
-    document.body.classList.add('hide-persistent-player');
-    // Show it again when the component unmounts
-    return () => document.body.classList.remove('hide-persistent-player');
-  }, []);
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
-  if (loading) return <div className="text-center text-white">Loading track details...</div>;
-  if (!track) return <div className="text-center text-white">Track not found</div>;
+  const handleProgress = () => {
+    if (audioRef.current) {
+      setProgress(audioRef.current.currentTime);
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (e) => {
+    if (audioRef.current) {
+      const seekTime = parseFloat(e.target.value);
+      audioRef.current.currentTime = seekTime;
+      setProgress(seekTime);
+    }
+  };
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  const handlePlayPause = () => {
-    if (currentTrack?.id !== track.id) {
-      playTrack(track);
-    } else {
-      togglePlayPause();
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (audio) {
+      audio.addEventListener('timeupdate', handleProgress);
+      audio.addEventListener('loadedmetadata', () => {
+        setDuration(audio.duration);
+      });
+
+      return () => {
+        audio.removeEventListener('timeupdate', handleProgress);
+        audio.removeEventListener('loadedmetadata', () => {
+          setDuration(audio.duration);
+        });
+        audio.pause();
+        audio.currentTime = 0;
+      };
     }
-  };
+  }, [track]); // Re-run this effect when `track` changes
+
+  if (loading) {
+    return null; // Render nothing while loading
+  }
+
+  if (!track) {
+    return <div className="text-center text-white">Track not found</div>;
+  }
 
   return (
     <div className="-mt-8 flex flex-col items-center justify-center min-h-screen bg-site-bg p-2">
@@ -60,7 +98,7 @@ function TrackDetail() {
           min="0"
           max={duration}
           value={progress}
-          onChange={(e) => seek(parseFloat(e.target.value))}
+          onChange={handleSeek}
           className="w-full"
         />
         <div className="flex justify-between text-gray-400 text-sm">
@@ -71,11 +109,13 @@ function TrackDetail() {
       <div className="flex justify-center items-center space-x-6">
         <button className="text-white text-2xl"><FaStepBackward /></button>
         <button onClick={handlePlayPause} className="bg-nsdr-accent text-nsdr-dark p-4 rounded-full text-3xl">
-          {isPlaying && currentTrack?.id === track.id ? <FaPause /> : <FaPlay />}
+          {isPlaying ? <FaPause /> : <FaPlay />}
         </button>
         <button className="text-white text-2xl"><FaStepForward /></button>
       </div>
+      <audio ref={audioRef} src={track?.audio_url} />
     </div>
   );
 }
+
 export default TrackDetail;

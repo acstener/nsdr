@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getCategories } from '../utils/supabaseUtils';
+import 'tailwindcss/tailwind.css';
+import Skeleton from '../components/Skeleton';
 
 function Home() {
   const [categories, setCategories] = useState([]);
@@ -20,37 +22,28 @@ function Home() {
     fetchCategories();
   }, []);
 
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen bg-site-bg text-white">Loading...</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-site-bg text-white">
-      {/* Navigation */}
-
-      {/* Main content */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h1 className="text-5xl font-bold mb-24 text-center">nsdr.co bosh</h1>
-        
-        <div className="grid grid-cols-3 gap-8">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/category/${category.id}`}
-              className="flex flex-col items-center"
-            >
-              <div className="w-48 h-48 mb-4 overflow-hidden rounded-lg">
-                <img 
-                  src={category.image_url || '/placeholder-image.jpg'} 
-                  alt={category.name} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h2 className="text-2xl font-bold mb-1">{category.name}</h2>
+    <div className="p-8 mb-8 bg-site-bg min-h-screen max-w-[796px] mx-auto space-y-8">
+      <h1 className="text-3xl font-semibold text-white mb-8">Find an NSDR track</h1>
+      
+      <div className="space-y-7">
+        {categories.map((category) => (
+          <Link
+            key={category.id}
+            to={`/category/${category.id}`}
+            className="flex items-center p-7 bg-gradient-to-r from-[#1E1C20] to-[#1D1C20] rounded-[20px] border-[1.5px] border-solid border-[#2f2e31] transition duration-300 ease-in-out hover:border-[#5e5e60] w-full"
+          >
+            <img
+              src={category.image_url || '/placeholder-image.jpg'}
+              alt={category.name}
+              className="w-32 h-32 rounded-xl mr-8 object-cover"
+            />
+            <div className="category-info flex-1">
+              <h2 className="font-medium text-2xl text-white mb-1">{category.name}</h2>
               <p className="text-sm text-gray-400">{category.description || 'Short desc'}</p>
-            </Link>
-          ))}
-        </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

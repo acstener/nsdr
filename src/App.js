@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import Category from './pages/Category';
 import TrackDetail from './pages/TrackDetail';
 import Navbar from './components/Navbar';
-import PersistentPlayer from './components/PersistentPlayer';
 import Auth from './components/Auth';
 import AuthCallback from './components/AuthCallback';
 import Onboarding from './components/Onboarding';
@@ -72,7 +71,6 @@ function App() {
               <Route path="/track/:trackId" element={<TrackDetail />} />
             </Routes>
           </main>
-          {session && <PersistentPlayer />}
         </div>
       </Router>
     </AudioProvider>
