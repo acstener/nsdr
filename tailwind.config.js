@@ -7,7 +7,7 @@ module.exports = {
       colors: {
         'nsdr-dark': '#0a192f',
         'nsdr-light': '#8892b0',
-        'nsdr-accent': '#64ffda',
+        'nsdr-accent': '#FF7E1E',
         'site-bg': '#151518',
         'track-bg': '#1e1c20',
         'track-border': '#2f2e31',

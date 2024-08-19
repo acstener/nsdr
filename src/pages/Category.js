@@ -16,10 +16,33 @@ function Category() {
           getCategories(),
           getTracksByCategory(categoryId)
         ]);
-        
+
+        console.log('Fetched categories:', categoriesData);
+        console.log('Fetched tracks:', tracksData);
+
         const currentCategory = categoriesData.find(cat => cat.id === categoryId);
+        console.log('Current category:', currentCategory);
+
         setCategory(currentCategory);
-        setTracks(tracksData);
+
+        // Log the featured field values
+        tracksData.forEach(track => console.log(`Track: ${track.title}, Featured: ${track.featured}`));
+
+        // Sort tracks by 'featured' field, handling null values
+        const sortedTracks = tracksData.sort((a, b) => {
+          if (a.featured === b.featured) {
+            return 0;
+          }
+          if (a.featured === null) {
+            return 1;
+          }
+          if (b.featured === null) {
+            return -1;
+          }
+          return a.featured ? -1 : 1;
+        });
+
+        setTracks(sortedTracks);
       } catch (error) {
         console.error('Error fetching category and tracks:', error);
       } finally {
@@ -58,7 +81,9 @@ function Category() {
                   <div className="toggle-div-flex">
                     <span className="featured-free">{track.category}</span>
                   </div>
-                  <p className="paragraph-11 time-no">NSDR · {track.duration} mins</p>
+                  <p className="paragraph-11 time-no">
+                    NSDR - {track.recorder ? track.recorder.name : 'Unknown'}
+                  </p> {/* Display recorder's name */}
                 </div>
               </Link>
             ))}

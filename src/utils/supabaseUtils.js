@@ -14,11 +14,12 @@ export const getCategories = async () => {
 export const getTracksByCategory = async (categoryId) => {
   const { data, error } = await supabase
     .from('tracks')
-    .select('*')
+    .select('id, title, description, image_url, featured, recorder(name)')
     .eq('category_id', categoryId)
     .order('title');
   
   if (error) throw error;
+  console.log('Fetched tracks data:', data); // Log the fetched tracks data
   return data;
 };
 
