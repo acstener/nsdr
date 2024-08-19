@@ -50,7 +50,7 @@ function TrackDetail() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-site-bg p-2">
+    <div className="-mt-8 flex flex-col items-center justify-center min-h-screen bg-site-bg p-2">
       <img src={track.image_url || '/default-album-art.jpg'} alt={track.title} className="w-64 h-64 rounded-lg shadow-lg mb-4" />
       <h2 className="text-white text-2xl font-bold mb-2">{track.title}</h2>
       <p className="text-gray-400 mb-4">{track.artist}</p>
@@ -78,5 +78,4 @@ function TrackDetail() {
     </div>
   );
 }
-
 export default TrackDetail;
