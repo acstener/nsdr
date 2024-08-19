@@ -33,9 +33,9 @@ const Auth = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-site-bg text-white p-4">
-      <h1 className="text-3xl font-bold mb-6">Sign In to NSDR.co</h1>
+      <h1 className="text-3xl font-bold mb-6">Sign in to NSDR.co</h1>
       {!message ? (
-        <form onSubmit={handleLogin} className="w-full max-w-sm">
+        <form onSubmit={handleLogin} className="w-full max-w-sm p-6 rounded-lg">
           <input
             type="email"
             placeholder="Your email"
