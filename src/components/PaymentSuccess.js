@@ -10,8 +10,10 @@ const PaymentSuccess = () => {
     const updateUserSubscription = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await updateUserProfile(user.id, { subscribed: true });
+        await updateUserProfile(user.id, { onboarded: true, subscribed: true });
         navigate('/');
+      } else {
+        navigate('/auth');
       }
     };
 
