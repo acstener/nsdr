@@ -1,41 +1,67 @@
-import React, { createContext, useState, useContext, useCallback } from 'react';
+import React, { createContext, useState, useRef, useEffect } from 'react';
 
 const AudioContext = createContext();
 
-export const AudioProvider = ({ children }) => {
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [audio] = useState(new Audio());
+export const useAudio = () => {
+  return React.useContext(AudioContext);
+};
 
-  const playTrack = useCallback((track) => {
-    setIsLoading(true);
-    audio.src = track.audio_url;
-    audio.load();
-    audio.play().then(() => {
+export const AudioProvider = ({ children }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(null);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    const handleEnded = () => {
+      setIsPlaying(false);
+    };
+
+    const audio = audioRef.current;
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
+
+  const playTrack = (track) => {
+    if (currentTrack?.id !== track.id) {
+      audioRef.current.src = track.audio_url;
+      audioRef.current.play();
       setCurrentTrack(track);
       setIsPlaying(true);
-      setIsLoading(false);
-    }).catch(error => {
-      console.error('Error playing track:', error);
-      setIsLoading(false);
-    });
-  }, [audio]);
+    } else {
+      togglePlayPause();
+    }
+  };
 
-  const togglePlayPause = useCallback(() => {
+  const togglePlayPause = () => {
     if (isPlaying) {
-      audio.pause();
-    } else if (currentTrack) {
-      audio.play();
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
-  }, [isPlaying, currentTrack, audio]);
+  };
+
+  const stopPlayback = () => {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    setIsPlaying(false);
+    setCurrentTrack(null);
+  };
+
+  const value = {
+    currentTrack,
+    isPlaying,
+    playTrack,
+    stopPlayback,
+  };
 
   return (
-    <AudioContext.Provider value={{ currentTrack, isPlaying, isLoading, playTrack, togglePlayPause }}>
+    <AudioContext.Provider value={value}>
       {children}
+      <audio ref={audioRef} />
     </AudioContext.Provider>
   );
 };
-
-export const useAudio = () => useContext(AudioContext);

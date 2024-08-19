@@ -1,13 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-nsdr-dark text-nsdr-light font-sans;
+@layer utilities {
+  .bg-site-bg {
+    background-color: #151518;
+  }
 }
 
+body {
+  @apply text-nsdr-light font-sans bg-site-bg;
+  font-family: 'Hanken Grotesk', sans-serif;
+}
 /* Custom utility classes */
 .bg-gradient-subtle {
   @apply bg-gradient-to-br from-nsdr-dark to-nsdr-light bg-opacity-10;
@@ -15,4 +21,29 @@ body {
 
 .hover-glow {
   @apply transition-all duration-300 hover:shadow-lg hover:shadow-nsdr-accent/20;
+}
+
+.hide-persistent-player .persistent-player {
+  display: none;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+.transition-opacity {
+  transition: opacity 0.5s ease-in-out;
 }
